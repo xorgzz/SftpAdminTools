@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+
+if [ $(whoami) = "root" ]; then
+	if id -u $1 &> /dev/null; then
+		echo "User $1 already exists !!"
+		echo "User '$1' unsuccessful creation - $(date)" >> \
+			/var/log/sftp_users_creation.log
+	else
+		echo "Creating user $1 ..."
+		useradd -g sftp -s /bin/false -m -d /home/$1 $1
+		usermod -G sftp -s /bin/false $1
+		rm -rf /home/$1/*
+		rm -rf /home/$1/.*
+		chown root: /home/$1
+		mkdir /home/$1/MyFiles
+		chown $1:sftp /home/$1/MyFiles
+		chmod 755 /home/$1
+		chmod 755 /home/$1/MyFiles
+		echo ""
+		passwd $1
+		echo ""
+		echo "User $1 has been created"
+		echo "User's files will be stored in /home/$1/MyFiles"
+		echo "User '$1' successfuly created - $(date)" >> \
+			/var/log/sftp_users_creation.log
+	fi
+else
+	echo "You must be root to perform this operation !!"
+	echo "Unauthorized user creation - $(whoami) - $(date)" >> \
+		/var/log/sftp_users_creation.log
+fi

@@ -1,0 +1,29 @@
+#!/usr/bin/bash
+
+if [ $(whoami) = "root" ]; then
+        if id -u $1 &> /dev/null; then
+		if [ $1 = "root" ] || [ $1 = "admin" ] ; then
+			echo "Can't remove user $1"
+			echo "Attempted deletion of $1 - $(whoami) - $(date)" >> \
+				/var/log/sftp_users_deletion.log
+			exit 1
+		else
+			echo "Deleting user $1"
+			echo "User $1 has been deleted - $(date)" >> \
+				/var/log/sftp_users_deletion.log
+
+			rm -rf /home/$1
+			userdel $1
+
+			exit 1
+		fi
+	else
+		echo "User $1 doesn't exist"
+		echo "Attempted deletion of non-existant $1 - $(whoami) - $(date)" >> \
+		/var/log/sftp_users_deletion.log
+	fi
+else
+	echo "You must be root to perform this operation !!"
+	echo "Unauthorized user deletion - $(whoami) - $(date)" >> \
+		/var/log/sftp_users_deletion.log
+fi
