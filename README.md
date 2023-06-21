@@ -1,3 +1,3 @@
 #### SFTP Admin tools ####
 
-Two simple bash programs to administrate users for SFTP server.
+Two simple bash programs to administrate users in SFTP server.
